@@ -37,7 +37,7 @@ import java.util.*;
  * Implementation of {@link CMISFacade} that use Apache Chemistry Project.
  */
 public class ChemistryCMISFacade implements CMISFacade {
-    private static final Logger LOG = Logger.getLogger(ChemistryCMISFacade.class);
+    private static final Logger logger = Logger.getLogger(ChemistryCMISFacade.class);
 
     private Session repositorySession;
     private Map<String, String> connectionParameters;
@@ -181,7 +181,7 @@ public class ChemistryCMISFacade implements CMISFacade {
         if (useAlfrescoExtension) {
             // Have the Alfresco Extended CMIS factory used.
             parameters.put(SessionParameter.OBJECT_FACTORY_CLASS, "org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl");
-            LOG.debug("The Alfresco Object Factor CMIS extension has been included in the session parameters.");
+            logger.debug("The Alfresco Object Factor CMIS extension has been included in the session parameters.");
         }
 
         return parameters;
@@ -191,11 +191,11 @@ public class ChemistryCMISFacade implements CMISFacade {
         String repoID = null;
 
         try {
-            LOG.debug("Attempting to dynamically obtain the repository ID.");
+            logger.debug("Attempting to dynamically obtain the repository ID.");
             List<Repository> repositoryList = SessionFactoryImpl.newInstance().getRepositories(parameters);
 
             if (repositoryList.isEmpty()) {
-                LOG.error(
+                logger.error(
                         "No repositories were returned at the CMIS server URL \"" + baseURL + "\". " +
                                 "The connector is currently non-functional.");
             } else {
@@ -205,7 +205,7 @@ public class ChemistryCMISFacade implements CMISFacade {
                 // Extract the ID of this repo, and add it to the parameters list.
                 repoID = firstRepo.getId();
 
-                LOG.debug("The repository ID that will be used is " + repoID + ".");
+                logger.debug("The repository ID that will be used is " + repoID + ".");
             }
         } catch (Exception repoIDEx) {
             throw new CMISConnectorConnectionException(
@@ -281,7 +281,7 @@ public class ChemistryCMISFacade implements CMISFacade {
                 returnObj = session.getObjectByPath(path, createOperationContext(null, null));
             }
         } catch (CmisObjectNotFoundException e) {
-            LOG.warn(e);
+            logger.warn(e);
         }
         return returnObj;
     }
@@ -296,7 +296,7 @@ public class ChemistryCMISFacade implements CMISFacade {
         ObjectId returnId = null;
         Session session = this.getSession(this.connectionParameters);
         if (session != null) {
-            LOG.debug(
+            logger.debug(
                     "Preparing to create a document with file name \"" + filename + "\" in the folder with ID \"" +
                             folderId + "\".");
             returnId =
@@ -308,7 +308,7 @@ public class ChemistryCMISFacade implements CMISFacade {
                             versioningState,
                             objectType,
                             properties);
-            LOG.debug("The ID of the repository node after document creation is \"" + returnId.getId() + "\".");
+            logger.debug("The ID of the repository node after document creation is \"" + returnId.getId() + "\".");
         }
 
         return returnId;
@@ -324,7 +324,7 @@ public class ChemistryCMISFacade implements CMISFacade {
         ObjectId returnId = null;
         Session session = this.getSession(this.connectionParameters);
         if (session != null) {
-            LOG.debug(
+            logger.debug(
                     "Preparing to create a document with file name \"" + filename + "\" in the folder with ID \"" +
                             folderId + "\".");
             returnId = createDocument(session.getObject(session.createObjectId(folderId)),
@@ -334,7 +334,7 @@ public class ChemistryCMISFacade implements CMISFacade {
                     versioningState,
                     objectType,
                     properties);
-            LOG.debug("The ID of the repository node after document creation is \"" + returnId.getId() + "\".");
+            logger.debug("The ID of the repository node after document creation is \"" + returnId.getId() + "\".");
         }
 
         return returnId;
@@ -353,7 +353,7 @@ public class ChemistryCMISFacade implements CMISFacade {
         if (session != null) {
             Validate.notEmpty(folderPath, "folderPath is empty");
 
-            LOG.debug(
+            logger.debug(
                     "Preparing to create a document with file name \"" + filename + "\" in folder \"" +
                             folderPath + "\".");
             returnId =
@@ -364,7 +364,7 @@ public class ChemistryCMISFacade implements CMISFacade {
                             versioningState,
                             objectType,
                             properties);
-            LOG.debug("The ID of the repository node after document creation is \"" + returnId.getId() + "\".");
+            logger.debug("The ID of the repository node after document creation is \"" + returnId.getId() + "\".");
         }
 
         return returnId;
@@ -382,7 +382,7 @@ public class ChemistryCMISFacade implements CMISFacade {
         ObjectId returnId = null;
         Session session = this.getSession(this.connectionParameters);
         if (session != null) {
-            LOG.debug(
+            logger.debug(
                     "Preparing to create a document with file name \"" + filename + "\" in folder \"" +
                             folderPath + "\".");
             returnId =
@@ -393,7 +393,7 @@ public class ChemistryCMISFacade implements CMISFacade {
                             versioningState,
                             objectType,
                             properties);
-            LOG.debug("The ID of the repository node after document creation is \"" + returnId.getId() + "\".");
+            logger.debug("The ID of the repository node after document creation is \"" + returnId.getId() + "\".");
         }
         return returnId;
     }
@@ -406,7 +406,7 @@ public class ChemistryCMISFacade implements CMISFacade {
             try {
                 returnObj = session.getObjectByPath(folderPath);
             } catch (CmisObjectNotFoundException e) {
-                LOG.debug("CMIS Object Not Found, Creating a Folder Structure: ", e);
+                logger.debug("CMIS Object Not Found, Creating a Folder Structure: ", e);
                 return createFolderStructure(folderPath);
             }
         }
@@ -433,7 +433,7 @@ public class ChemistryCMISFacade implements CMISFacade {
             try {
                 currentObject = getObjectByPath(currentPath);
             } catch (CmisObjectNotFoundException ex) {
-                LOG.debug("Path not found: " + currentPath, ex);
+                logger.debug("Path not found: " + currentPath, ex);
             }
 
             currentObjectId = currentObject != null
@@ -498,7 +498,7 @@ public class ChemistryCMISFacade implements CMISFacade {
                 returnId = session.createFolder(properties, session.getObject(
                         session.createObjectId(parentObjectId)));
             } catch (CmisContentAlreadyExistsException e) {
-                LOG.debug("CMIS Content Already Exists ", e);
+                logger.debug("CMIS Content Already Exists ", e);
                 CmisObject object = session.getObject(session.createObjectId(parentObjectId));
                 if (!(object instanceof Folder)) {
                     throw new IllegalArgumentException(parentObjectId + " is not a folder");
@@ -555,13 +555,13 @@ public class ChemistryCMISFacade implements CMISFacade {
         if (session != null) {
             Validate.notEmpty(statement, "statement is empty");
 
-            LOG.debug("Preparing to execute the CMIS query \"" + statement + "\".");
+            logger.debug("Preparing to execute the CMIS query \"" + statement + "\".");
             OperationContext ctx = createOperationContext(filter, orderBy);
             resultList = session.query(statement, searchAllVersions, ctx);
-            LOG.debug("The result list contains " + resultList.getTotalNumItems() + " items.");
+            logger.debug("The result list contains " + resultList.getTotalNumItems() + " items.");
 
             for (QueryResult currentResult : resultList) {
-                LOG.debug(
+                logger.debug(
                         "Object with ID \"" + currentResult.getPropertyByQueryName("cmis:objectId") +
                                 "\" is in the result set.");
             }
@@ -579,7 +579,7 @@ public class ChemistryCMISFacade implements CMISFacade {
         if (target != null && target instanceof FileableCmisObject) {
             return ((FileableCmisObject) target).getParents();
         } else {
-            LOG.error("Unable to obtain the object reference, so no parent references could be obtained.");
+            logger.error("Unable to obtain the object reference, so no parent references could be obtained.");
         }
         return Collections.emptyList();
         // End getParentFolders
@@ -625,7 +625,7 @@ public class ChemistryCMISFacade implements CMISFacade {
         if (target != null && target instanceof Document) {
             return ((Document) target).getContentStream();
         } else {
-            LOG.error("Unable to obtain the object reference in order to obtain the content of the object.");
+            logger.error("Unable to obtain the object reference in order to obtain the content of the object.");
         }
         return null;
     }
@@ -643,7 +643,7 @@ public class ChemistryCMISFacade implements CMISFacade {
         if (target != null) {
             return target.move(new ObjectIdImpl(sourceFolderId), new ObjectIdImpl(targetFolderId));
         } else {
-            LOG.error("Unable to obtain the object reference in order to perform the object move.");
+            logger.error("Unable to obtain the object reference in order to perform the object move.");
         }
         return null;
     }
@@ -661,7 +661,7 @@ public class ChemistryCMISFacade implements CMISFacade {
         if (target != null) {
             returnObj = target.updateProperties(this.translateInboundProperties(properties));
         } else {
-            LOG.error("Unable to obtain the object reference in order to update the properties of the object.");
+            logger.error("Unable to obtain the object reference in order to update the properties of the object.");
         }
         return returnObj;
         // End updateObjectProperties
@@ -819,17 +819,17 @@ public class ChemistryCMISFacade implements CMISFacade {
                                        String childObjectId,
                                        String relationshipType) {
         if (StringUtils.isEmpty(parentObjectId)) {
-            LOG.error("No value was specified for the required attribute \"parentObjectId\". No relationship could be created.");
+            logger.error("No value was specified for the required attribute \"parentObjectId\". No relationship could be created.");
             return null;
         }
 
         if (StringUtils.isEmpty(childObjectId)) {
-            LOG.error("No value was specified for the required attribute \"childObjectId\". No relationship could be created.");
+            logger.error("No value was specified for the required attribute \"childObjectId\". No relationship could be created.");
             return null;
         }
 
         if (StringUtils.isEmpty(relationshipType)) {
-            LOG.error("No value was specified for the required attribute \"relationshipType\". No relationship could be created.");
+            logger.error("No value was specified for the required attribute \"relationshipType\". No relationship could be created.");
             return null;
         }
 
@@ -837,7 +837,7 @@ public class ChemistryCMISFacade implements CMISFacade {
         Session session = this.getSession(this.connectionParameters);
 
         if (session == null) {
-            LOG.error("Unable to obtain a repository session, so no relationship could be created.");
+            logger.error("Unable to obtain a repository session, so no relationship could be created.");
             return null;
         }
 
@@ -846,11 +846,11 @@ public class ChemistryCMISFacade implements CMISFacade {
             CmisObject parentObj = this.getObjectById(parentObjectId);
 
             if (parentObj == null) {
-                LOG.error("The parent object with ID \"" + parentObjectId + "\" doesn't exists in the repository. No relationship will be created.");
+                logger.error("The parent object with ID \"" + parentObjectId + "\" doesn't exists in the repository. No relationship will be created.");
                 return null;
             }
         } catch (Exception objEx) {
-            LOG.error("An error occurred while attempting to determine if an the parent object with ID \"" + parentObjectId + "\" exists in the repository. ", objEx);
+            logger.error("An error occurred while attempting to determine if an the parent object with ID \"" + parentObjectId + "\" exists in the repository. ", objEx);
             return null;
         }
 
@@ -858,11 +858,11 @@ public class ChemistryCMISFacade implements CMISFacade {
             CmisObject childObj = this.getObjectById(childObjectId);
 
             if (childObj == null) {
-                LOG.error("The child object with ID \"" + childObjectId + "\" doesn't exists in the repository. No relationship will be created.");
+                logger.error("The child object with ID \"" + childObjectId + "\" doesn't exists in the repository. No relationship will be created.");
                 return null;
             }
         } catch (Exception objEx) {
-            LOG.error("An error occurred while attempting to determine if an the child object with ID \"" + childObjectId + "\" exists in the repository. ", objEx);
+            logger.error("An error occurred while attempting to determine if an the child object with ID \"" + childObjectId + "\" exists in the repository. ", objEx);
             return null;
         }
 
@@ -875,7 +875,7 @@ public class ChemistryCMISFacade implements CMISFacade {
         try {
             return session.createRelationship(relProps, null, null, null);
         } catch (Exception relEx) {
-            LOG.error("An error occurred while attempting to create a relationship between the parent object with ID \"" + parentObjectId + "\" and the child object with ID \"" + childObjectId + "\". ", relEx);
+            logger.error("An error occurred while attempting to create a relationship between the parent object with ID \"" + parentObjectId + "\" and the child object with ID \"" + childObjectId + "\". ", relEx);
             return null;
         }
     }

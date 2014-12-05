@@ -18,7 +18,7 @@ import java.lang.reflect.Proxy;
 
 public class CMISFacadeAdaptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CMISFacadeAdaptor.class);
+    private static final Logger logger = LoggerFactory.getLogger(CMISFacadeAdaptor.class);
 
     private CMISFacadeAdaptor() {
 
@@ -38,20 +38,20 @@ public class CMISFacadeAdaptor {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Invoked method {0} with arguments {1}", method.getName(), args);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Invoked method {0} with arguments {1}", method.getName(), args);
             }
 
             try {
                 Object ret = method.invoke(facade, args);
 
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Returned method {0} with value {1}", ret);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Returned method {0} with value {1}", ret);
                 }
                 return ret;
             } catch (InvocationTargetException e) {
-                if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("Method " + method.getName() + " thew " + e.getClass(), e);
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Method " + method.getName() + " thew " + e.getClass(), e);
                 }
 
                 Throwable cause = e.getCause();
