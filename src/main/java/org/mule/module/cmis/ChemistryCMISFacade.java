@@ -957,14 +957,14 @@ public class ChemistryCMISFacade implements CMISFacade {
             while (keySetItr.hasNext()) {
                 Map.Entry<String, String> entry = keySetItr.next();
                 String currentKey = entry.getKey();
-                String currentVal = entry.getValue();
+                Object currentVal = entry.getValue();
 
                 // Don't waste our time with empty properties.
                 if (currentVal != null) {
                     // Determine if this is a multi-valued property.
                     if (currentKey.toLowerCase().startsWith("m:")) {
                         // This is a multi-valued property. Each value is separated by a ','.
-                        String[] valArray = currentVal.split(",");
+                        String[] valArray = ((String)currentVal).split(",");
 
                         List<String> propArray = new ArrayList<String>(Arrays.asList(valArray));
                         returnMap.put(currentKey.substring(2), propArray);
